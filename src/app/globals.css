@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@import "../styles/animations.css";
+
+@theme {
+  /* Core surfaces */
+  --color-void: #08090d;
+  --color-surface: #10131b;
+  --color-elevated: #191e2a;
+
+  /* Type */
+  --color-ink: #f4f6fc;
+  --color-muted: #9299ab;
+
+  /* Accents */
+  --color-accent: #6575ff;
+  --color-violet: #8b5cf6;
+  --color-cyan: #00d4ff;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --radius-panel: 1.5rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-body-family), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --font-display: var(--font-display-family), ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: color-mix(in oklab, var(--color-ink) 8%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-accent) 40%, transparent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #08090d;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #232a3a;
+    border-radius: 999px;
+    border: 2px solid #08090d;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #313b52;
+  }
+}
+
+/* ---------- Reusable surface treatments ---------- */
+
+.glass-panel {
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--color-elevated) 72%, transparent),
+    color-mix(in oklab, var(--color-surface) 55%, transparent)
+  );
+  border: 1px solid color-mix(in oklab, var(--color-ink) 9%, transparent);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+/* Subtle grid that fades out towards the edges */
+.grid-overlay {
+  background-image: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-ink) 6%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) 6%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 30%,
+    #000 20%,
+    transparent 78%
+  );
+}
+
+/* Fine film grain for depth */
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-ink) 8%,
+    #b7c1ff 38%,
+    var(--color-accent) 62%,
+    var(--color-violet) 88%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.ring-gradient {
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    color-mix(in oklab, var(--color-accent) 90%, transparent) 90deg,
+    color-mix(in oklab, var(--color-cyan) 85%, transparent) 170deg,
+    transparent 250deg,
+    color-mix(in oklab, var(--color-violet) 85%, transparent) 320deg,
+    transparent 360deg
+  );
+}
+
+/* Cards: pointer-tracked spotlight, driven by CSS variables set in JS */
+.spotlight-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out-expo);
+  background: radial-gradient(
+    320px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklab, var(--color-accent) 22%, transparent),
+    transparent 62%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spotlight-card:hover::before,
+.spotlight-card:focus-within::before {
+  opacity: 1;
+}
+
+.spotlight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-out-expo);
+  background: radial-gradient(
+    280px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    color-mix(in oklab, var(--color-accent) 75%, transparent),
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spotlight-card:hover::after,
+.spotlight-card:focus-within::after {
+  opacity: 1;
+}
+
+/* Section anchor offset for the sticky navbar */
+section[id] {
+  scroll-margin-top: 6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
